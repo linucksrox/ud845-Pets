@@ -108,7 +108,7 @@ public class EditorActivity extends AppCompatActivity {
             // Because AdapterView is an abstract class, onNothingSelected must be defined
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                mGender = 0; // Unknown
+                mGender = PetEntry.GENDER_UNKNOWN; // Unknown
             }
         });
     }
@@ -123,9 +123,24 @@ public class EditorActivity extends AppCompatActivity {
         // Get current values from activity
         String petName = mNameEditText.getText().toString().trim();
         String petBreed = mBreedEditText.getText().toString().trim();
-        int petGender = (int) mGenderSpinner.getSelectedItem();
-        Log.d("EditorActivity.java", "PetGender retrieved using getSelctedItem, value is: " + petGender);
+        // Using getSelectedItemPosition() assumes that entries in the spinner are arranged in the
+        // same order as they are defined in PetContract which may not always be true. Let's use
+        // getSelectedItem().toString() instead, and switch case our way back to the correct ID
+        // to avoid this possibility.
+        String petGenderString = mGenderSpinner.getSelectedItem().toString();
         int petWeight = Integer.parseInt(mWeightEditText.getText().toString().trim());
+
+        int petGender;
+        switch(petGenderString) {
+            case "Male":
+                petGender = PetEntry.GENDER_MALE;
+                break;
+            case "Female":
+                petGender = PetEntry.GENDER_FEMALE;
+                break;
+            default:
+                petGender = PetEntry.GENDER_UNKNOWN;
+        }
 
         // Create a new map of values using the column name key constants
         ContentValues values = new ContentValues();
