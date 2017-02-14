@@ -35,6 +35,8 @@ import com.example.android.pets.data.PetDbHelper;
  */
 public class CatalogActivity extends AppCompatActivity {
 
+    private PetDbHelper mDbHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +52,9 @@ public class CatalogActivity extends AppCompatActivity {
             }
         });
 
+        // To access our database, we instantiate our subclass of SQLiteOpenHelper
+        // and pass the context, which is the current activity.
+        mDbHelper = new PetDbHelper(this);
         displayDatabaseInfo();
     }
 
@@ -58,10 +63,6 @@ public class CatalogActivity extends AppCompatActivity {
      * the pets database.
      */
     private void displayDatabaseInfo() {
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
-        PetDbHelper mDbHelper = new PetDbHelper(this);
-
         // Create and/or open a database to read from it
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
@@ -84,8 +85,6 @@ public class CatalogActivity extends AppCompatActivity {
      * Helper method to insert hardcoded pet data into the database. For debugging purposes only.
      */
     private void insertPet() {
-        PetDbHelper mDbHelper = new PetDbHelper(this);
-
         // Get a writable copy of the database for insertion
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
@@ -98,9 +97,6 @@ public class CatalogActivity extends AppCompatActivity {
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
-
-        // Update screen with new info
-        displayDatabaseInfo();
     }
 
     @Override
@@ -118,6 +114,7 @@ public class CatalogActivity extends AppCompatActivity {
             // Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
                 insertPet();
+                displayDatabaseInfo();
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
