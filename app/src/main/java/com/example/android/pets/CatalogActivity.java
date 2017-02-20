@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 import com.example.android.pets.data.PetContract;
 import com.example.android.pets.data.PetContract.PetEntry;
 import com.example.android.pets.data.PetDbHelper;
+import com.example.android.pets.data.PetProvider;
 
 /**
  * Displays list of pets that were entered and stored in the app.
@@ -68,8 +70,7 @@ public class CatalogActivity extends AppCompatActivity {
                 PetEntry.COLUMN_PET_GENDER,
                 PetEntry.COLUMN_PET_WEIGHT};
 
-        //Cursor cursor = db.query(PetEntry.TABLE_NAME, null, null, null, null, null, null);
-        Cursor cursor = getContentResolver().query(PetEntry.CONTENT_URI, projection, null, null, null);
+        Cursor cursor = getContentResolver().query(PetEntry.CONTENT_URI, null, null, null, null);
         int petID = cursor.getColumnIndex(PetEntry._ID);
         int petName = cursor.getColumnIndex(PetEntry.COLUMN_PET_NAME);
         int petBreed = cursor.getColumnIndex(PetEntry.COLUMN_PET_BREED);
@@ -108,18 +109,16 @@ public class CatalogActivity extends AppCompatActivity {
      * Helper method to insert hardcoded pet data into the database. For debugging purposes only.
      */
     private void insertPet() {
-        // Get a writable copy of the database for insertion
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        Uri newUri;
 
-        // Create a new map of values using the column name key constants
         ContentValues values = new ContentValues();
         values.put(PetEntry.COLUMN_PET_NAME, "Toto");
         values.put(PetEntry.COLUMN_PET_BREED, "Terrier");
         values.put(PetEntry.COLUMN_PET_GENDER, PetEntry.GENDER_MALE);
         values.put(PetEntry.COLUMN_PET_WEIGHT, 14);
 
-        // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
+        // Insert data using ContentResolver
+        newUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
     }
 
     @Override
@@ -150,9 +149,6 @@ public class CatalogActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
-        mDbHelper = new PetDbHelper(this);
         displayDatabaseInfo();
     }
 }
