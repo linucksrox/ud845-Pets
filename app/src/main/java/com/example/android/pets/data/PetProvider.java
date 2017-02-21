@@ -7,6 +7,8 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
+
 import com.example.android.pets.data.PetContract.PetEntry;
 
 /**
@@ -116,10 +118,28 @@ public class PetProvider extends ContentProvider {
      * for that specific row in the database.
      */
     private Uri insertPet(Uri uri, ContentValues values) {
+        // Sanity checking
+        String name = values.getAsString(PetEntry.COLUMN_PET_NAME);
+        if (name == null || name.equals("")) {
+            throw new IllegalArgumentException("Pet name can't be empty");
+        }
+        Integer gender = values.getAsInteger(PetEntry.COLUMN_PET_GENDER);
+        if (gender == null || !PetEntry.isValidGender(gender)) {
+            throw new IllegalArgumentException("Pet gender was invalid");
+        }
+        Integer weight = values.getAsInteger(PetEntry.COLUMN_PET_WEIGHT);
+        if (weight == null || weight < 0) {
+            throw new IllegalArgumentException("Weight must be 0 or more");
+        }
 
         // Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
         long id = database.insert(PetEntry.TABLE_NAME, null, values);
+
+        if (id == -1) {
+            Log.e(LOG_TAG, "Failed to insert row for " + uri);
+            return null;
+        }
 
         // Once we know the ID of the new row in the table,
         // return the new URI with the ID appended to the end of it
