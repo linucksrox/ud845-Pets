@@ -174,6 +174,10 @@ public class PetProvider extends ContentProvider {
      */
     private int updatePet(ContentValues values, String whereClause, String[] whereArgs) {
         // Sanity checks
+        // no need to update the database if there's nothing to update
+        if (values.size() == 0) {
+            return 0;
+        }
         if (values.containsKey(PetEntry.COLUMN_PET_NAME)) {
             String name = values.getAsString(PetEntry.COLUMN_PET_NAME);
             if (name == null || name.equals("")) {
