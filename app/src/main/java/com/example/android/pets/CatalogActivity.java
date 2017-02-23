@@ -38,8 +38,6 @@ import com.example.android.pets.data.PetProvider;
  */
 public class CatalogActivity extends AppCompatActivity {
 
-    private PetDbHelper mDbHelper;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,13 +60,6 @@ public class CatalogActivity extends AppCompatActivity {
      */
     private void displayDatabaseInfo() {
         TextView displayView = (TextView) findViewById(R.id.text_view_pet);
-
-        String[] projection = {
-                PetEntry._ID,
-                PetEntry.COLUMN_PET_NAME,
-                PetEntry.COLUMN_PET_BREED,
-                PetEntry.COLUMN_PET_GENDER,
-                PetEntry.COLUMN_PET_WEIGHT};
 
         Cursor cursor = getContentResolver().query(PetEntry.CONTENT_URI, null, null, null, null);
         int petID = cursor.getColumnIndex(PetEntry._ID);
