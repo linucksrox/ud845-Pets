@@ -26,6 +26,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.android.pets.data.PetContract;
@@ -59,41 +60,12 @@ public class CatalogActivity extends AppCompatActivity {
      * the pets database.
      */
     private void displayDatabaseInfo() {
-        TextView displayView = (TextView) findViewById(R.id.text_view_pet);
+        ListView displayView = (ListView) findViewById(R.id.catalog_list);
 
         Cursor cursor = getContentResolver().query(PetEntry.CONTENT_URI, null, null, null, null);
-        int petID = cursor.getColumnIndex(PetEntry._ID);
-        int petName = cursor.getColumnIndex(PetEntry.COLUMN_PET_NAME);
-        int petBreed = cursor.getColumnIndex(PetEntry.COLUMN_PET_BREED);
-        int petGender = cursor.getColumnIndex(PetEntry.COLUMN_PET_GENDER);
-        int petWeight = cursor.getColumnIndex(PetEntry.COLUMN_PET_WEIGHT);
-        try {
-            // Display the number of rows in the Cursor (which reflects the number of rows in the
-            // pets table in the database).
-            displayView.setText("The pets table contains " + cursor.getCount() + " pets.");
-            displayView.append("\n");
-            displayView.append("\n");
-            displayView.append("_id - name - breed - gender - weight");
-            displayView.append("\n");
-            displayView.append("\n");
 
-            while(cursor.moveToNext()) {
-                displayView.append(cursor.getString(petID));
-                displayView.append(" - ");
-                displayView.append(cursor.getString(petName));
-                displayView.append(" - ");
-                displayView.append(cursor.getString(petBreed));
-                displayView.append(" - ");
-                displayView.append(cursor.getString(petGender));
-                displayView.append(" - ");
-                displayView.append(cursor.getString(petWeight));
-                displayView.append("\n");
-            }
-        } finally {
-            // Always close the cursor when you're done reading from it. This releases all its
-            // resources and makes it invalid.
-            cursor.close();
-        }
+        PetCursorAdapter petAdapter = new PetCursorAdapter(this, cursor);
+        displayView.setAdapter(petAdapter);
     }
 
     /**
