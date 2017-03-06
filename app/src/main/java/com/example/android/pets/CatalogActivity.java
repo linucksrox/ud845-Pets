@@ -34,6 +34,8 @@ import com.example.android.pets.data.PetContract.PetEntry;
 import com.example.android.pets.data.PetDbHelper;
 import com.example.android.pets.data.PetProvider;
 
+import java.util.List;
+
 /**
  * Displays list of pets that were entered and stored in the app.
  */
@@ -53,6 +55,10 @@ public class CatalogActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        ListView petListView = (ListView) findViewById(R.id.catalog_list);
+        View emptyView = findViewById(R.id.empty_view);
+        petListView.setEmptyView(emptyView);
     }
 
     /**
