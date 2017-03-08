@@ -96,6 +96,9 @@ public class PetProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }
+
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
         return cursor;
     }
 
@@ -141,6 +144,8 @@ public class PetProvider extends ContentProvider {
             return null;
         }
 
+        getContext().getContentResolver().notifyChange(uri, null);
+
         // Once we know the ID of the new row in the table,
         // return the new URI with the ID appended to the end of it
         return ContentUris.withAppendedId(uri, id);
@@ -154,14 +159,14 @@ public class PetProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case PETS:
-                return updatePet(contentValues, whereClause, whereArgs);
+                return updatePet(uri, contentValues, whereClause, whereArgs);
             case PET_ID:
                 // For the PET_ID code, extract out the ID from the URI,
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
                 whereClause = PetEntry._ID + "=?";
                 whereArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
-                return updatePet(contentValues, whereClause, whereArgs);
+                return updatePet(uri, contentValues, whereClause, whereArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
         }
@@ -172,7 +177,7 @@ public class PetProvider extends ContentProvider {
      * specified in the selection and selection arguments (which could be 0 or 1 or more pets).
      * Return the number of rows that were successfully updated.
      */
-    private int updatePet(ContentValues values, String whereClause, String[] whereArgs) {
+    private int updatePet(Uri uri, ContentValues values, String whereClause, String[] whereArgs) {
         // Sanity checks
         // no need to update the database if there's nothing to update
         if (values.size() == 0) {
@@ -201,6 +206,8 @@ public class PetProvider extends ContentProvider {
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
         int numOfRows = database.update(PetEntry.TABLE_NAME, values, whereClause, whereArgs);
 
+        getContext().getContentResolver().notifyChange(uri, null);
+
         return numOfRows;
     }
 
@@ -212,19 +219,29 @@ public class PetProvider extends ContentProvider {
         // Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
+        int rowsDeleted;
+
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case PETS:
                 // Delete all rows that match the whereClause and whereArgs
-                return database.delete(PetEntry.TABLE_NAME, whereClause, whereArgs);
+                rowsDeleted = database.delete(PetEntry.TABLE_NAME, whereClause, whereArgs);
+                break;
             case PET_ID:
                 // Delete a single row from the pets table using the given ID
                 whereClause = PetEntry._ID + "=?";
                 whereArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
-                return database.delete(PetEntry.TABLE_NAME, whereClause, whereArgs);
+                rowsDeleted = database.delete(PetEntry.TABLE_NAME, whereClause, whereArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Deletion is not supported for " + uri);
         }
+
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return rowsDeleted;
     }
 
     /**
