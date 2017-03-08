@@ -206,7 +206,9 @@ public class PetProvider extends ContentProvider {
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
         int numOfRows = database.update(PetEntry.TABLE_NAME, values, whereClause, whereArgs);
 
-        getContext().getContentResolver().notifyChange(uri, null);
+        if (numOfRows != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
 
         return numOfRows;
     }
