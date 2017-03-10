@@ -196,6 +196,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        if (editPetUri == null) {
+            return null;
+        }
+
         String[] projection = {
                 PetEntry._ID,
                 PetEntry.COLUMN_PET_NAME,
