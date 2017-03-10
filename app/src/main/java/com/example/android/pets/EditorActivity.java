@@ -17,13 +17,11 @@ package com.example.android.pets;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,6 +53,8 @@ public class EditorActivity extends AppCompatActivity {
     /** EditText field to enter the pet's gender */
     private Spinner mGenderSpinner;
 
+    private static final String LOG_TAG = EditorActivity.class.getSimpleName();
+
     /**
      * Gender of the pet. The possible values are:
      * 0 for unknown gender, 1 for male, 2 for female.
@@ -71,6 +71,17 @@ public class EditorActivity extends AppCompatActivity {
         mBreedEditText = (EditText) findViewById(R.id.edit_pet_breed);
         mWeightEditText = (EditText) findViewById(R.id.edit_pet_weight);
         mGenderSpinner = (Spinner) findViewById(R.id.spinner_gender);
+
+        Uri petUri = getIntent().getData();
+
+        if (petUri == null) {
+            // This is a new pet, so make this the Add a Pet activity
+            setTitle(R.string.add_pet_activity_title);
+        }
+        else {
+            // This is an existing pet that the user wants to edit
+            setTitle(R.string.edit_pet_activity_title);
+        }
 
         mDbHelper = new PetDbHelper(this);
         setupSpinner();
