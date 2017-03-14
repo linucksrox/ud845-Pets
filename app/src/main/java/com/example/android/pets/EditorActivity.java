@@ -132,7 +132,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     /**
      * Helper method to insert hardcoded pet data into the database. For debugging purposes only.
      */
-    private void insertPet() {
+    private void savePet() {
         Uri newUri;
 
         // Get current values from activity
@@ -147,16 +147,27 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         values.put(PetEntry.COLUMN_PET_GENDER, mGender);
         values.put(PetEntry.COLUMN_PET_WEIGHT, petWeight);
 
-        // Insert the new pet
-        newUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
-
-        long newRowId = ContentUris.parseId(newUri);
-
-        if (newRowId >= 1) {
-            Toast.makeText(this, R.string.insert_pet_success_message, Toast.LENGTH_SHORT).show();
+        // If this is a new pet, save a new record. Otherwise, update the existing record
+        if (editPetUri == null) {
+            // Insert the new pet
+            newUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+            long newRowId = ContentUris.parseId(newUri);
+            if (newRowId >= 1) {
+                Toast.makeText(this, R.string.insert_pet_success_message, Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(this, R.string.insert_pet_error_message, Toast.LENGTH_SHORT).show();
+            }
         }
         else {
-            Toast.makeText(this, R.string.insert_pet_error_message, Toast.LENGTH_SHORT).show();
+            // This is an existing pet that we are updating
+            int numOfRowsUpdated = getContentResolver().update(editPetUri, values, null, null);
+            if (numOfRowsUpdated == 1) {
+                Toast.makeText(this, R.string.update_pet_successful_message, Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(this, R.string.update_pet_error_message, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -175,7 +186,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // Insert pet into database
-                insertPet();
+                savePet();
                 finish();
                 return true;
             // Respond to a click on the "Delete" menu option
