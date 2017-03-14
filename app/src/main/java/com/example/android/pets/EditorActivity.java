@@ -36,14 +36,12 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.android.pets.data.PetContract.PetEntry;
-import com.example.android.pets.data.PetDbHelper;
 
 /**
  * Allows user to create a new pet or edit an existing one.
  */
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private PetDbHelper mDbHelper;
     private static final int PET_LOADER = 0;
     private Uri editPetUri;
 
@@ -87,7 +85,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             setTitle(R.string.edit_pet_activity_title);
         }
 
-        mDbHelper = new PetDbHelper(this);
         setupSpinner();
 
         getSupportLoaderManager().initLoader(PET_LOADER, null, this);
