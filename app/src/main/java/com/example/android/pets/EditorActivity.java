@@ -63,6 +63,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
      */
     private int mGender = PetEntry.GENDER_UNKNOWN;
 
+    private String mName;
+    private String mBreed;
+    private String mWeight;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,37 +140,43 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         Uri newUri;
 
         // Get current values from activity
-        String petName = mNameEditText.getText().toString().trim();
-        String petBreed = mBreedEditText.getText().toString().trim();
-        int petWeight = Integer.parseInt(mWeightEditText.getText().toString().trim());
+        mName = mNameEditText.getText().toString().trim();
+        mBreed = mBreedEditText.getText().toString().trim();
+        mWeight = mWeightEditText.getText().toString().trim();
 
-        // Create a new map of values using the column name key constants
-        ContentValues values = new ContentValues();
-        values.put(PetEntry.COLUMN_PET_NAME, petName);
-        values.put(PetEntry.COLUMN_PET_BREED, petBreed);
-        values.put(PetEntry.COLUMN_PET_GENDER, mGender);
-        values.put(PetEntry.COLUMN_PET_WEIGHT, petWeight);
+        if (TextUtils.isEmpty(mName) && TextUtils.isEmpty(mBreed) && TextUtils.isEmpty(mWeight) && mGender == PetEntry.GENDER_UNKNOWN) {
+            finish();
+        } else {
+            int petWeight = 0;
+            if (!TextUtils.isEmpty(mWeight)) {
+                petWeight = Integer.parseInt(mWeight);
+            }
 
-        // If this is a new pet, save a new record. Otherwise, update the existing record
-        if (editPetUri == null) {
-            // Insert the new pet
-            newUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
-            long newRowId = ContentUris.parseId(newUri);
-            if (newRowId >= 1) {
-                Toast.makeText(this, R.string.insert_pet_success_message, Toast.LENGTH_SHORT).show();
-            }
-            else {
-                Toast.makeText(this, R.string.insert_pet_error_message, Toast.LENGTH_SHORT).show();
-            }
-        }
-        else {
-            // This is an existing pet that we are updating
-            int numOfRowsUpdated = getContentResolver().update(editPetUri, values, null, null);
-            if (numOfRowsUpdated == 1) {
-                Toast.makeText(this, R.string.update_pet_successful_message, Toast.LENGTH_SHORT).show();
-            }
-            else {
-                Toast.makeText(this, R.string.update_pet_error_message, Toast.LENGTH_SHORT).show();
+            // Create a new map of values using the column name key constants
+            ContentValues values = new ContentValues();
+            values.put(PetEntry.COLUMN_PET_NAME, mName);
+            values.put(PetEntry.COLUMN_PET_BREED, mBreed);
+            values.put(PetEntry.COLUMN_PET_GENDER, mGender);
+            values.put(PetEntry.COLUMN_PET_WEIGHT, petWeight);
+
+            // If this is a new pet, save a new record. Otherwise, update the existing record
+            if (editPetUri == null) {
+                // Insert the new pet
+                newUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+                long newRowId = ContentUris.parseId(newUri);
+                if (newRowId >= 1) {
+                    Toast.makeText(this, R.string.insert_pet_success_message, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, R.string.insert_pet_error_message, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                // This is an existing pet that we are updating
+                int numOfRowsUpdated = getContentResolver().update(editPetUri, values, null, null);
+                if (numOfRowsUpdated == 1) {
+                    Toast.makeText(this, R.string.update_pet_successful_message, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, R.string.update_pet_error_message, Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
@@ -185,7 +195,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Insert pet into database
+                // Insert pet into database after validating input
                 savePet();
                 finish();
                 return true;
