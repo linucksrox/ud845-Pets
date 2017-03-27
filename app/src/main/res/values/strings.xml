@@ -67,4 +67,7 @@
     <string name="add_pet_activity_title">Add a Pet</string>
     <string name="update_pet_successful_message">Updated existing pet</string>
     <string name="update_pet_error_message">Error updating existing pet</string>
+    <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep Editing</string>
 </resources>
