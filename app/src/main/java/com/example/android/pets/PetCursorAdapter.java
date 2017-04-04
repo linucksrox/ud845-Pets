@@ -60,7 +60,7 @@ public class PetCursorAdapter extends CursorAdapter {
         String name = cursor.getString(cursor.getColumnIndexOrThrow(PetEntry.COLUMN_PET_NAME));
         String breed = cursor.getString(cursor.getColumnIndexOrThrow(PetEntry.COLUMN_PET_BREED));
         if (TextUtils.isEmpty(breed)) {
-            breed = "Unknown Breed";
+            breed = context.getString(R.string.unknown_breed);
         }
 
         nameTV.setText(name);

@@ -88,4 +88,5 @@
     <string name="delete_all_dialog_msg">Delete all pets?</string>
     <string name="catalog_delete_pets_successful">All pets successfully deleted</string>
     <string name="catalog_delete_pets_failed">Failed to delete pets</string>
+    <string name="unknown_breed">Unknown Breed</string>
 </resources>
