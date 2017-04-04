@@ -239,20 +239,23 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
      * Perform the deletion of the pet in the database.
      */
     private void deletePet() {
-        String selectionClause = PetEntry._ID + " = ?";
-        String[] selectionArgs = {String.valueOf(ContentUris.parseId(mCurrentPetUri))};
         int rowsDeleted = 0;
 
-        // Actually delete the record
-        rowsDeleted = getContentResolver().delete(PetEntry.CONTENT_URI, selectionClause, selectionArgs);
+        // make sure we are deleting an existing pet
+        if (mCurrentPetUri != null) {
+            // Actually delete the record
+            rowsDeleted = getContentResolver().delete(mCurrentPetUri, null, null);
+        }
 
         // Show a toast with the results
         if (rowsDeleted > 0) {
-            Toast.makeText(this, "Pet Deleted", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.editor_delete_pet_successful, Toast.LENGTH_SHORT).show();
         }
         else {
-            Toast.makeText(this, "Error Deleting Pet", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.editor_delete_pet_failed, Toast.LENGTH_SHORT).show();
         }
+
+        finish();
     }
 
     @Override
