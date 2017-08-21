@@ -109,6 +109,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         else {
             // This is an existing pet that the user wants to edit
             setTitle(R.string.edit_pet_activity_title);
+            getSupportLoaderManager().initLoader(PET_LOADER, null, this);
         }
 
         /** Attach OnTouchListener to all editable fields */
@@ -118,8 +119,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mGenderSpinner.setOnTouchListener(mTouchListener);
 
         setupSpinner();
-
-        getSupportLoaderManager().initLoader(PET_LOADER, null, this);
     }
 
     /**
@@ -322,10 +321,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (mCurrentPetUri == null) {
-            return null;
-        }
-
         String[] projection = {
                 PetEntry._ID,
                 PetEntry.COLUMN_PET_NAME,
